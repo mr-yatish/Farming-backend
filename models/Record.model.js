@@ -50,6 +50,14 @@ const RecordSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    status: {
+      type: Boolean,
+      default: true,
+    },
+    deleteflag: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

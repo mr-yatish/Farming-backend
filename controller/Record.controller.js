@@ -46,6 +46,34 @@ const createRecord = async (req, res) => {
   }
 };
 
+// Get All Records
+const getAll = async (req, res) => {
+  try {
+    const records = await Record.find({ status: true, deleteflag: false });
+
+    if (records.length === 0) {
+      res.status(404).json({
+        status: false,
+        message: "No records found",
+        data: false,
+      });
+    }
+
+    res.status(200).json({
+      status: true,
+      message: "Records fetched successfully",
+      data: records,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+      data: false,
+    });
+  }
+};
+
 module.exports = {
+  getAll,
   createRecord,
 };
