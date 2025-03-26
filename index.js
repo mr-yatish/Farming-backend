@@ -15,7 +15,7 @@ const server = http.createServer(app);
 connectDB();
 
 // Middleware
-app.use(cors("*"));
+app.use(cors());
 app.use(express.json());
 
 // Routes

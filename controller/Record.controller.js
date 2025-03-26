@@ -14,6 +14,7 @@ const createRecord = async (req, res) => {
       totalAmount,
       labourCount,
       totalPaid,
+      date,
     } = req.body;
 
     const record = new Record({
@@ -27,6 +28,7 @@ const createRecord = async (req, res) => {
       totalAmount,
       labourCount,
       totalPaid,
+      date,
     });
 
     await record.save();
