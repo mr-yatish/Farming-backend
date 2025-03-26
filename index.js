@@ -11,7 +11,6 @@ const PORT = process.env.PORT || 5000;
 // Create a server instance
 const server = http.createServer(app);
 
-
 // Connect to the database
 connectDB();
 
@@ -19,6 +18,8 @@ connectDB();
 app.use(cors("*"));
 app.use(express.json());
 
+// Routes
+app.use("/api/records", require("./routes/Record.router"));
 
 // Start the server using `server.listen` instead of `app.listen`
 server.listen(PORT, () => {
