@@ -65,7 +65,32 @@ const getAll = async (req, res) => {
   }
 };
 
+// Delete Record With Id
+const deleteRecord = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const record = await Record.findByIdAndUpdate(
+      id,
+      { status: false, deleteflag: true },
+      { new: true }
+    );
+
+    res.status(200).json({
+      status: true,
+      message: "Record deleted successfully",
+      data: record,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+      data: false,
+    });
+  }
+};
+
 module.exports = {
   getAll,
   createRecord,
+  deleteRecord,
 };
