@@ -28,7 +28,6 @@ const createRecord = async (req, res) => {
       perHourRate,
       totalAmount,
       labourCount,
-      totalPaid,
       date,
       totalPayments: [
         {
@@ -43,6 +42,40 @@ const createRecord = async (req, res) => {
     res.status(201).json({
       status: true,
       message: "Record created successfully",
+      data: record,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+      data: false,
+    });
+  }
+};
+
+// Add Payment
+const addPayment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { amount, paymentmode, date } = req.body;
+
+    const record = await Record.findByIdAndUpdate(
+      id,
+      {
+        $push: {
+          totalPayments: {
+            amount,
+            date: date || Date.now(), 
+            paymentmode,
+          },
+        },
+      },
+      { new: true }
+    );
+
+    res.status(200).json({
+      status: true,
+      message: "Payment added successfully",
       data: record,
     });
   } catch (error) {
@@ -101,4 +134,5 @@ module.exports = {
   getAll,
   createRecord,
   deleteRecord,
+  addPayment
 };

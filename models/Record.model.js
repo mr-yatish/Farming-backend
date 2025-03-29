@@ -42,10 +42,10 @@ const RecordSchema = new mongoose.Schema(
       enum: ["pending", "paid"],
       default: "pending",
     },
-    totalPaid: {
-      type: Number,
-      default: 0,
-    },
+    // totalPaid: {
+    //   type: Number,
+    //   default: 0,
+    // },
     totalPayments: {
       type: Array,
       default: [
