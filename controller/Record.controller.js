@@ -65,7 +65,7 @@ const addPayment = async (req, res) => {
         $push: {
           totalPayments: {
             amount,
-            date: date || Date.now(), 
+            date: date || Date.now(),
             paymentmode,
           },
         },
@@ -91,6 +91,11 @@ const addPayment = async (req, res) => {
 const getAll = async (req, res) => {
   try {
     const records = await Record.find({ status: true, deleteflag: false });
+    // latest first on basic of createdAt And Update At
+
+    records.sort((a, b) => {
+      return new Date(b.updatedAt) - new Date(a.updatedAt);
+    });
 
     res.status(200).json({
       status: true,
@@ -134,5 +139,5 @@ module.exports = {
   getAll,
   createRecord,
   deleteRecord,
-  addPayment
+  addPayment,
 };
