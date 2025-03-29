@@ -15,6 +15,7 @@ const createRecord = async (req, res) => {
       labourCount,
       totalPaid,
       date,
+      paymentmode = "cash",
     } = req.body;
 
     const record = new Record({
@@ -29,6 +30,13 @@ const createRecord = async (req, res) => {
       labourCount,
       totalPaid,
       date,
+      totalPayments: [
+        {
+          amount: totalPaid,
+          date: Date.now(),
+          paymentmode: paymentmode,
+        },
+      ],
     });
 
     await record.save();

@@ -46,6 +46,16 @@ const RecordSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    totalPayments: {
+      type: Array,
+      default: [
+        {
+          amount: 0,
+          date: Date.now(),
+          paymentmode: ["cash", "online"],
+        },
+      ],
+    },
     date: {
       type: Date,
       default: Date.now,
