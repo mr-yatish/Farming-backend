@@ -33,7 +33,7 @@ const createRecord = async (req, res) => {
       totalPayments: [
         {
           amount: totalPaid,
-          date: Date.now(),
+          date: date || Date.now(),
           paymentmode: paymentmode,
         },
       ],
