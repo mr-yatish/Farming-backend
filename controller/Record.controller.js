@@ -96,7 +96,9 @@ const updateRecord = async (req, res) => {
       };
     }
 
-    const record = await Record.findByIdAndUpdate(id, updateData, { new: true });
+    const record = await Record.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
 
     res.status(200).json({
       status: true,
@@ -118,19 +120,51 @@ const addPayment = async (req, res) => {
     const { id } = req.params;
     const { amount, paymentmode, date } = req.body;
 
-    const record = await Record.findByIdAndUpdate(
-      id,
-      {
-        $push: {
-          totalPayments: {
-            amount,
-            date: date || Date.now(),
-            paymentmode,
-          },
-        },
-      },
-      { new: true }
+    // Find the record by ID
+    const record = await Record.findById(id);
+
+    if (!record) {
+      return res.status(404).json({
+        status: false,
+        message: "Record not found",
+        data: false,
+      });
+    }
+
+    // Calculate the total payments already made
+    const totalPaymentsMade = record.totalPayments.reduce(
+      (sum, payment) => sum + payment.amount,
+      0
     );
+
+    // Check if adding the new payment exceeds the totalAmount
+    if (totalPaymentsMade >= record.totalAmount) {
+      return res.status(400).json({
+        status: false,
+        message: "Payment is done",
+        data: false,
+      });
+    }
+
+    // Check if the new payment exceeds the remaining amount
+    if (totalPaymentsMade + amount > record.totalAmount) {
+      return res.status(400).json({
+        status: false,
+        message: `Payment exceeds the remaining amount. Remaining amount: ${
+          record.totalAmount - totalPaymentsMade
+        }`,
+        data: false,
+      });
+    }
+
+    // Push the new payment into the totalPayments array
+    record.totalPayments.push({
+      amount,
+      date: date || Date.now(),
+      paymentmode,
+    });
+
+    await record.save();
 
     res.status(200).json({
       status: true,
