@@ -50,8 +50,8 @@ const RecordSchema = new mongoose.Schema(
       type: Array,
       default: [
         {
-          // add unique id auto generate
-          id: new mongoose.Types.ObjectId(),
+          // add unique id
+          id: { type: String, default: new mongoose.Types.ObjectId() },
           amount: 0,
           date: Date.now(),
           paymentmode: ["cash", "online"],
