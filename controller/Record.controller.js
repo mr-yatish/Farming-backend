@@ -150,9 +150,14 @@ const addPayment = async (req, res) => {
     if (totalPaymentsMade + amount > record.totalAmount) {
       return res.status(400).json({
         status: false,
-        message: `Payment exceeds the remaining amount. Remaining amount: ${
-          record.totalAmount - totalPaymentsMade
-        }`,
+        message: {
+          english: `Payment exceeds the remaining amount. Remaining amount: ${
+            record.totalAmount - totalPaymentsMade
+          }`,
+          hindi: `भुगतान शेष राशि से अधिक है। शेष राशि: ${
+            record.totalAmount - totalPaymentsMade
+          }`,
+        },
         data: false,
       });
     }
