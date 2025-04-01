@@ -53,6 +53,61 @@ const createRecord = async (req, res) => {
   }
 };
 
+// Update Record
+const updateRecord = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      customerName,
+      customerPhone,
+      customerAddress,
+      note,
+      hours,
+      minutes,
+      perHourRate,
+      totalAmount,
+      labourCount,
+      totalPaid,
+      date,
+      paymentmode = "cash",
+    } = req.body;
+    const record = await Record.findByIdAndUpdate(
+      id,
+      {
+        customerName,
+        customerPhone,
+        customerAddress,
+        note,
+        hours,
+        minutes,
+        perHourRate,
+        totalAmount,
+        labourCount,
+        date,
+        totalPayments: [
+          {
+            amount: totalPaid,
+            date: date || Date.now(),
+            paymentmode: paymentmode,
+          },
+        ],
+      },
+      { new: true }
+    );
+    res.status(200).json({
+      status: true,
+      message: "Record updated successfully",
+      data: record,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+      data: false,
+    });
+  }
+};
+
 // Add Payment
 const addPayment = async (req, res) => {
   try {
@@ -140,4 +195,5 @@ module.exports = {
   createRecord,
   deleteRecord,
   addPayment,
+  updateRecord,
 };

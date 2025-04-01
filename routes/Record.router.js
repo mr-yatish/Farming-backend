@@ -8,5 +8,6 @@ router.post("/create", recordRouter.createRecord);
 router.get("/getAllRecords", recordRouter.getAll);
 router.delete("/deleteRecord/:id", recordRouter.deleteRecord);
 router.post("/addPayment/:id", recordRouter.addPayment);
+router.put("/updateRecord/:id", recordRouter.updateRecord);
 // Export the router
 module.exports = router;
