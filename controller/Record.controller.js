@@ -328,16 +328,6 @@ const deletePayment = async (req, res) => {
         data: false,
       });
     }
-    if (!mongoose.Types.ObjectId.isValid(paymentId)) {
-      return res.status(400).json({
-        status: false,
-        message: {
-          english: "Invalid payment ID format",
-          hindi: "अमान्य भुगतान आईडी",
-        },
-        data: false,
-      });
-    }
 
     // Find the record by ID
     const record = await Record.findById(recordId);
@@ -362,7 +352,10 @@ const deletePayment = async (req, res) => {
 
     res.status(200).json({
       status: true,
-      message: "Payment deleted successfully",
+      message: {
+        english: "Payment deleted successfully",
+        hindi: "भुगतान सफलतापूर्वक हटा दिया गया",
+      },
       data: record,
     });
   } catch (error) {
