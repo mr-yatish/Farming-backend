@@ -301,11 +301,83 @@ const deleteRecord = async (req, res) => {
 };
 
 // Delete Payment
+const deletePayment = async (req, res) => {
+  try {
+    const { recordId, paymentId } = req.params;
 
+    // required both ids
+    if (!recordId || !paymentId) {
+      return res.status(400).json({
+        status: false,
+        message: {
+          english: "Record ID and Payment ID are required",
+          hindi: "रिकॉर्ड आईडी और भुगतान आईडी आवश्यक हैं",
+        },
+        data: false,
+      });
+    }
+
+    // Validate ObjectId format
+    if (!mongoose.Types.ObjectId.isValid(recordId)) {
+      return res.status(400).json({
+        status: false,
+        message: {
+          english: "Invalid record ID format",
+          hindi: "अमान्य रिकॉर्ड आईडी",
+        },
+        data: false,
+      });
+    }
+    if (!mongoose.Types.ObjectId.isValid(paymentId)) {
+      return res.status(400).json({
+        status: false,
+        message: {
+          english: "Invalid payment ID format",
+          hindi: "अमान्य भुगतान आईडी",
+        },
+        data: false,
+      });
+    }
+
+    // Find the record by ID
+    const record = await Record.findById(recordId);
+
+    if (!record) {
+      return res.status(404).json({
+        status: false,
+        message: {
+          english: "Record not found",
+          hindi: "रिकॉर्ड नहीं मिला",
+        },
+        data: false,
+      });
+    }
+
+    // Filter out the payment with the given ID
+    record.totalPayments = record.totalPayments.filter(
+      (payment) => payment.id !== paymentId
+    );
+
+    await record.save();
+
+    res.status(200).json({
+      status: true,
+      message: "Payment deleted successfully",
+      data: record,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: false,
+      message: error.message,
+      data: false,
+    });
+  }
+};
 module.exports = {
   getAll,
   createRecord,
   deleteRecord,
   addPayment,
   updateRecord,
+  deletePayment,
 };
