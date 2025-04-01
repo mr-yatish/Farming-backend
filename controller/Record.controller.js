@@ -72,43 +72,87 @@ const updateRecord = async (req, res) => {
       paymentmode = "cash",
     } = req.body;
 
-    const updateData = {
-      customerName,
-      customerPhone,
-      customerAddress,
-      note,
-      hours,
-      minutes,
-      perHourRate,
-      totalAmount,
-      labourCount,
-      date,
-    };
+    // Find the record by ID
+    const record = await Record.findById(id);
 
-    // If totalPaid is not 0, push a new payment into the totalPayments array
-    if (totalPaid !== 0) {
-      updateData.$push = {
-        totalPayments: {
-          amount: totalPaid,
-          date: date || Date.now(),
-          paymentmode,
+    if (!record) {
+      return res.status(404).json({
+        status: false,
+        message: {
+          english: "Record not found",
+          hindi: "रिकॉर्ड नहीं मिला",
         },
-      };
+        data: false,
+      });
     }
 
-    const record = await Record.findByIdAndUpdate(id, updateData, {
-      new: true,
-    });
+    // Calculate the total payments already made
+    const totalPaymentsMade = record.totalPayments.reduce(
+      (sum, payment) => sum + payment.amount,
+      0
+    );
+
+    // If totalPaid is not 0, validate if adding it exceeds the totalAmount
+    if (totalPaid !== 0) {
+      if (totalPaymentsMade >= record.totalAmount) {
+        return res.status(400).json({
+          status: false,
+          message: {
+            english: "Total payments already equal or exceed the total amount. No further payments allowed.",
+            hindi: "कुल भुगतान पहले से ही कुल राशि के बराबर या उससे अधिक है। आगे भुगतान की अनुमति नहीं है।",
+          },
+          data: false,
+        });
+      }
+
+      if (totalPaymentsMade + totalPaid > record.totalAmount) {
+        return res.status(400).json({
+          status: false,
+          message: {
+            english: `Payment exceeds the remaining amount. Remaining amount: ${record.totalAmount - totalPaymentsMade}`,
+            hindi: `भुगतान शेष राशि से अधिक है। शेष राशि: ${record.totalAmount - totalPaymentsMade}`,
+          },
+          data: false,
+        });
+      }
+
+      // Push the new payment into the totalPayments array
+      record.totalPayments.push({
+        amount: totalPaid,
+        date: date || Date.now(),
+        paymentmode,
+      });
+    }
+
+    // Update other fields
+    record.customerName = customerName;
+    record.customerPhone = customerPhone;
+    record.customerAddress = customerAddress;
+    record.note = note;
+    record.hours = hours;
+    record.minutes = minutes;
+    record.perHourRate = perHourRate;
+    record.totalAmount = totalAmount;
+    record.labourCount = labourCount;
+    record.date = date;
+
+    await record.save();
 
     res.status(200).json({
       status: true,
-      message: "Record updated successfully",
+      message: {
+        english: "Record updated successfully",
+        hindi: "रिकॉर्ड सफलतापूर्वक अपडेट किया गया",
+      },
       data: record,
     });
   } catch (error) {
     res.status(500).json({
       status: false,
-      message: error.message,
+      message: {
+        english: error.message,
+        hindi: "त्रुटि: " + error.message,
+      },
       data: false,
     });
   }
@@ -126,7 +170,10 @@ const addPayment = async (req, res) => {
     if (!record) {
       return res.status(404).json({
         status: false,
-        message: "Record not found",
+        message: {
+          english: "Record not found",
+          hindi: "रिकॉर्ड नहीं मिला",
+        },
         data: false,
       });
     }
@@ -141,7 +188,10 @@ const addPayment = async (req, res) => {
     if (totalPaymentsMade >= record.totalAmount) {
       return res.status(400).json({
         status: false,
-        message: "Payment is done",
+        message: {
+          english: "Total payments already equal or exceed the total amount. No further payments allowed.",
+          hindi: "कुल भुगतान पहले से ही कुल राशि के बराबर या उससे अधिक है। आगे भुगतान की अनुमति नहीं है।",
+        },
         data: false,
       });
     }
@@ -151,12 +201,8 @@ const addPayment = async (req, res) => {
       return res.status(400).json({
         status: false,
         message: {
-          english: `Payment exceeds the remaining amount. Remaining amount: ${
-            record.totalAmount - totalPaymentsMade
-          }`,
-          hindi: `भुगतान शेष राशि से अधिक है। शेष राशि: ${
-            record.totalAmount - totalPaymentsMade
-          }`,
+          english: `Payment exceeds the remaining amount. Remaining amount: ${record.totalAmount - totalPaymentsMade}`,
+          hindi: `भुगतान शेष राशि से अधिक है। शेष राशि: ${record.totalAmount - totalPaymentsMade}`,
         },
         data: false,
       });
@@ -173,13 +219,19 @@ const addPayment = async (req, res) => {
 
     res.status(200).json({
       status: true,
-      message: "Payment added successfully",
+      message: {
+        english: "Payment added successfully",
+        hindi: "भुगतान सफलतापूर्वक जोड़ा गया",
+      },
       data: record,
     });
   } catch (error) {
     res.status(500).json({
       status: false,
-      message: error.message,
+      message: {
+        english: error.message,
+        hindi: "त्रुटि: " + error.message,
+      },
       data: false,
     });
   }
