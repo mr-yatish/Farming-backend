@@ -67,7 +67,7 @@ const updateRecord = async (req, res) => {
       perHourRate,
       totalAmount,
       labourCount,
-      totalPaid,
+      totalPaid =0,
       date,
       paymentmode = "cash",
     } = req.body;
@@ -85,7 +85,7 @@ const updateRecord = async (req, res) => {
         labourCount,
         date,
         totalPayments: [
-          {
+          totalPaid !== 0 && {
             amount: totalPaid,
             date: date || Date.now(),
             paymentmode: paymentmode,
