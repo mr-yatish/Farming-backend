@@ -67,33 +67,37 @@ const updateRecord = async (req, res) => {
       perHourRate,
       totalAmount,
       labourCount,
-      totalPaid =0,
+      totalPaid = 0,
       date,
       paymentmode = "cash",
     } = req.body;
-    const record = await Record.findByIdAndUpdate(
-      id,
-      {
-        customerName,
-        customerPhone,
-        customerAddress,
-        note,
-        hours,
-        minutes,
-        perHourRate,
-        totalAmount,
-        labourCount,
-        date,
-        totalPayments: [
-          totalPaid !== 0 && {
-            amount: totalPaid,
-            date: date || Date.now(),
-            paymentmode: paymentmode,
-          },
-        ],
-      },
-      { new: true }
-    );
+
+    const updateData = {
+      customerName,
+      customerPhone,
+      customerAddress,
+      note,
+      hours,
+      minutes,
+      perHourRate,
+      totalAmount,
+      labourCount,
+      date,
+    };
+
+    // If totalPaid is not 0, push a new payment into the totalPayments array
+    if (totalPaid !== 0) {
+      updateData.$push = {
+        totalPayments: {
+          amount: totalPaid,
+          date: date || Date.now(),
+          paymentmode,
+        },
+      };
+    }
+
+    const record = await Record.findByIdAndUpdate(id, updateData, { new: true });
+
     res.status(200).json({
       status: true,
       message: "Record updated successfully",
