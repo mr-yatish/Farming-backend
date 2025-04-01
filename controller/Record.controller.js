@@ -1,4 +1,5 @@
 const Record = require("../models/Record.model");
+const mongoose = require("mongoose");
 
 // Create a new record
 const createRecord = async (req, res) => {
@@ -124,6 +125,7 @@ const updateRecord = async (req, res) => {
 
       // Push the new payment into the totalPayments array
       record.totalPayments.push({
+        id: new mongoose.Types.ObjectId().toString(),
         amount: totalPaid,
         date: date || Date.now(),
         paymentmode,
@@ -220,8 +222,9 @@ const addPayment = async (req, res) => {
       });
     }
 
-    // Push the new payment into the totalPayments array
+    // Push the new payment with a unique ObjectId
     record.totalPayments.push({
+      id: new mongoose.Types.ObjectId().toString(),
       amount,
       date: date || Date.now(),
       paymentmode,
@@ -248,7 +251,6 @@ const addPayment = async (req, res) => {
     });
   }
 };
-
 
 // Get All Records
 const getAll = async (req, res) => {

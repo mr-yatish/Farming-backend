@@ -51,7 +51,7 @@ const RecordSchema = new mongoose.Schema(
       default: [
         {
           // add unique id
-          id: { type: String, default: new mongoose.Types.ObjectId() },
+          id: { type: String },
           amount: 0,
           date: Date.now(),
           paymentmode: ["cash", "online"],
