@@ -18,6 +18,11 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 
+// Awake Api
+app.get("/", (req, res) => {
+  res.send("Server is awake!");
+});
+
 // Routes
 app.use("/api/records", require("./routes/Record.router"));
 
