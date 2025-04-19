@@ -20,7 +20,7 @@ app.use(express.json());
 
 // Awake Api
 app.get("/", (req, res) => {
-  res.send("Server is awake!");
+  res.status(200).send(`Server is awake! ${new Date().toISOString()}`);
 });
 
 // Routes
